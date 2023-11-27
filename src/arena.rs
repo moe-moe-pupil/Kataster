@@ -28,31 +28,26 @@ fn spawn_arena(mut commands: Commands) {
     commands.insert_resource(Gravity::ZERO);
 }
 
+fn interval_calc(value: f32, vel: f32, min: f32, max: f32) -> f32 {
+    if value < min && vel < 0.0 {
+        max
+    } else if value > max && vel > 0.0 {
+        min
+    } else {
+        value
+    }
+}
+
 fn movement(mut query: Query<(&LinearVelocity, &mut Position)>) {
     for (linvel, mut position) in query.iter_mut() {
         let mut x = position.x;
         let mut y = position.y;
-        let mut updated = false;
         // Wrap around screen edges
         let half_width = ARENA_WIDTH / 2.0;
         let half_height = ARENA_HEIGHT / 2.0;
-        if x < -half_width && linvel.x < 0.0 {
-            x = half_width;
-            updated = true;
-        } else if x > half_width && linvel.x > 0.0 {
-            x = -half_width;
-            updated = true;
-        }
-        if y < -half_height && linvel.y < 0.0 {
-            y = half_height;
-            updated = true;
-        } else if y > half_height && linvel.y > 0.0 {
-            y = -half_height;
-            updated = true;
-        }
-        if updated {
-            position.x = x;
-            position.y = y;
-        }
+        x = interval_calc(x, linvel.x, -half_width, half_width);
+        y = interval_calc(y, linvel.y, -half_height, half_height);
+        position.x = x;
+        position.y = y;
     }
 }
