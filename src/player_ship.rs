@@ -176,6 +176,11 @@ fn ship_input_system(
         } else {
             0.0
         };
+        if action_state.just_released(PlayerAction::RotateLeft)
+            || action_state.just_released(PlayerAction::RotateRight)
+        {
+            angvel.0 *= 0.1;
+        };
         let rotation = if action_state.pressed(PlayerAction::RotateLeft) {
             1
         } else if action_state.pressed(PlayerAction::RotateRight) {
